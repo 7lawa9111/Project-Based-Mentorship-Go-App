@@ -1,15 +1,15 @@
 package main
 
 import (
-	"Project-Based-Mentorship-Go-App/models"
 	"fmt"
+	"github.com/7lawa9111/Project-Based-Mentorship-Go-App/issues/models"
 	"github.com/google/uuid"
 )
 
 func main() {
 	fmt.Println(models.Author{
-		id:        uuid.New(),
-		firstName: "John",
-		lastName:  "Doe",
+		ID:        uuid.New(),
+		FirstName: "John",
+		LastName:  "Doe",
 	})
 }

@@ -7,12 +7,12 @@ import (
 )
 
 type Document struct {
-	id        uuid.UUID
-	authorId  uuid.UUID
-	title     string
-	content   string
-	createdAt time.Time
-	updatedAt time.Time
-	createdBy string
-	updatedBy string
+	ID        uuid.UUID
+	AuthorId  uuid.UUID
+	Title     string
+	Content   string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	CreatedBy string
+	UpdatedBy string
 }
