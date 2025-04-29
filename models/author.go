@@ -6,11 +6,10 @@ import (
 	"time"
 )
 
-type Document struct {
+type Author struct {
 	ID        uuid.UUID
-	AuthorId  uuid.UUID
-	Title     string
-	Content   string
+	FirstName string
+	LastName  string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	CreatedBy string
