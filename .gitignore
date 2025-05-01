@@ -29,8 +29,12 @@ Thumbs.db
 *.tmp
 
 # Swagger generated docs (if you want to regenerate them)
+/docs/
 docs/swagger.json
 docs/docs.go
+docs/swagger.yaml
 
 # .env files
 .env
+
+main
