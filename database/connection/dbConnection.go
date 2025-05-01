@@ -2,15 +2,23 @@ package connection
 
 import (
 	"fmt"
-	"github.com/7lawa9111/Project-Based-Mentorship-Go-App/issues/models"
+
+	"github.com/7lawa9111/Project-Based-Mentorship-Go-App/models"
+
+	// "github.com/7lawa9111/Project-Based-Mentorship-Go-App/issues/models"
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"log"
-	"os"
 )
 
 func NewDatabaseConnection() (*gorm.DB, error) {
+	if err := godotenv.Load(); err != nil {
+		log.Println("Warning: .env file not found, falling back to system environment variables")
+	}
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		os.Getenv("DB_HOST"),

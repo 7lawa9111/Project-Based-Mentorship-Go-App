@@ -10,18 +10,18 @@ import (
 	"gorm.io/gorm"
 )
 
-// @Summary      Create a new Document
-// @Description  Add a new Document to the system
-// @Tags         Documents
+// @Summary      Create a new author
+// @Description  Add a new author to the system
+// @Tags         authors
 // @Accept       json
 // @Produce      json
-// @Param        Document  body      models.Document  true  "Document Info"
-// @Success      201     {object}  models.Document
+// @Param        author  body      models.Author  true  "Author Info"
+// @Success      201     {object}  models.Author
 // @Failure      400     {object}  map[string]string
-// @Router       /documents [post]
-func CreateDocument(db *gorm.DB) gin.HandlerFunc {
+// @Router       /authors [post]
+func CreateAuthor(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var input models.Document
+		var input models.Author
 
 		if err := c.ShouldBindJSON(&input); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
