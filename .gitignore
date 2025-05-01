@@ -1,0 +1,36 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Dependency directories (optional)
+vendor/
+
+# Go workspace file
+go.work
+go.work.sum
+
+# IDE/editor config files
+.vscode/
+.idea/
+*.sw?
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Swagger generated docs (if you want to regenerate them)
+docs/swagger.json
+docs/docs.go
+
+# .env files
+.env
