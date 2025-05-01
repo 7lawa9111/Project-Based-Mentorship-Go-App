@@ -1,0 +1,118 @@
+basePath: /
+definitions:
+  models.Author:
+    properties:
+      created_at:
+        example: "2020-09-20T14:00:00+09:00"
+        type: string
+      created_by:
+        example: John
+        type: string
+      first_name:
+        example: John
+        type: string
+      id:
+        example: "1"
+        type: string
+      last_name:
+        example: Doe
+        type: string
+      updated_at:
+        example: "2020-09-20T14:00:00+09:00"
+        type: string
+      updated_by:
+        example: Doe
+        type: string
+    type: object
+  models.Document:
+    properties:
+      authorId:
+        type: string
+      content:
+        example: Document Content
+        type: string
+      created_at:
+        example: "2020-09-20T14:00:00+09:00"
+        type: string
+      created_by:
+        example: John
+        type: string
+      id:
+        example: "1"
+        type: string
+      title:
+        description: Author    Author    `gorm:"foreignKey:AuthorID;references:ID"
+          json:"author"`
+        example: Document Title
+        type: string
+      updated_at:
+        example: "2020-09-20T14:00:00+09:00"
+        type: string
+      updated_by:
+        example: Doe
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is the backend API for the go project-based mentorship platform.
+  title: Go Project Mentorship API
+  version: "1.0"
+paths:
+  /authors:
+    post:
+      consumes:
+      - application/json
+      description: Add a new author to the system
+      parameters:
+      - description: Author Info
+        in: body
+        name: author
+        required: true
+        schema:
+          $ref: '#/definitions/models.Author'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Author'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new author
+      tags:
+      - authors
+  /documents:
+    post:
+      consumes:
+      - application/json
+      description: Add a new Document to the system
+      parameters:
+      - description: Document Info
+        in: body
+        name: Document
+        required: true
+        schema:
+          $ref: '#/definitions/models.Document'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Document'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new Document
+      tags:
+      - Documents
+swagger: "2.0"
