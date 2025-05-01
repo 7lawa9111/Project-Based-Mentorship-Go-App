@@ -15,7 +15,7 @@ import (
 // @Tags         authors
 // @Accept       json
 // @Produce      json
-// @Param        author  body      models.Author  true  "Author Info"
+// @Param        author  body      dto.CreateAuthorDto  true  "Author Info"
 // @Success      201     {object}  models.Author
 // @Failure      400     {object}  map[string]string
 // @Router       /authors [post]
@@ -38,5 +38,38 @@ func CreateAuthor(db *gorm.DB) gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusCreated, input)
+	}
+}
+
+// @Summary      Get author by ID
+// @Description  Retrieve an author's information by their unique ID
+// @Tags         authors
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Author ID"
+// @Success      200  {object}  models.Author
+// @Failure      400  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Router       /authors/{id} [get]
+func GetAuthorByID(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		idParam := c.Param("id")
+		id, err := uuid.Parse(idParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID format"})
+			return
+		}
+
+		var author models.Author
+		if err := db.First(&author, "id = ?", id).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				c.JSON(http.StatusNotFound, gin.H{"error": "Author not found"})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, author)
 	}
 }
