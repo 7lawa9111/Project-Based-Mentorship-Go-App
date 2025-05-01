@@ -10,5 +10,6 @@ func RegisterDocumentsRoutes(router *gin.Engine, db *gorm.DB) {
 	documentGroup := router.Group("/documents")
 	{
 		documentGroup.POST("", handlers.CreateDocument(db))
+		documentGroup.GET("/:id", handlers.GetDocumentByID(db))
 	}
 }

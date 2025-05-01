@@ -15,7 +15,7 @@ import (
 // @Tags         Documents
 // @Accept       json
 // @Produce      json
-// @Param        Document  body      models.Document  true  "Document Info"
+// @Param        Document  body       dto.CreateDocumentDto  true  "Document Info"
 // @Success      201     {object}  models.Document
 // @Failure      400     {object}  map[string]string
 // @Router       /documents [post]
@@ -38,5 +38,38 @@ func CreateDocument(db *gorm.DB) gin.HandlerFunc {
 		}
 
 		c.JSON(http.StatusCreated, input)
+	}
+}
+
+// @Summary      Get Document by ID
+// @Description  Retrieve a document by its unique ID
+// @Tags         Documents
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Document ID"
+// @Success      200  {object}  models.Document
+// @Failure      400  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Router       /documents/{id} [get]
+func GetDocumentByID(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		idParam := c.Param("id")
+		id, err := uuid.Parse(idParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID format"})
+			return
+		}
+
+		var document models.Document
+		if err := db.First(&document, "id = ?", id).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				c.JSON(http.StatusNotFound, gin.H{"error": "Document not found"})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusOK, document)
 	}
 }
