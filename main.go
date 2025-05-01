@@ -1,15 +1,17 @@
 package main
 
 import (
-	"fmt"
-	"github.com/7lawa9111/Project-Based-Mentorship-Go-App/issues/models"
-	"github.com/google/uuid"
+	"log"
+
+	"database/connection"
 )
 
 func main() {
-	fmt.Println(models.Author{
-		ID:        uuid.New(),
-		FirstName: "John",
-		LastName:  "Doe",
-	})
+	db, err := connection.NewDatabaseConnection()
+	if err != nil {
+		log.Fatal(" Failed to connect to database:", err)
+	}
+
+	log.Println(" Connected to database and migrations done!")
+
 }
