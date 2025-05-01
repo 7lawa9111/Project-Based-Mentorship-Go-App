@@ -7,8 +7,8 @@ import (
 )
 
 func RegisterDocumentsRoutes(router *gin.Engine, db *gorm.DB) {
-	authorGroup := router.Group("/documents")
+	documentGroup := router.Group("/documents")
 	{
-		authorGroup.POST("", handlers.CreateDocument(db))
+		documentGroup.POST("", handlers.CreateDocument(db))
 	}
 }
