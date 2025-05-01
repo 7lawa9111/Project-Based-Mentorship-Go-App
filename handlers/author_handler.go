@@ -15,7 +15,7 @@ import (
 // @Tags         authors
 // @Accept       json
 // @Produce      json
-// @Param        author  body      models.Author  true  "Author Info"
+// @Param        author  body      dto.CreateAuthor  true  "Author Info"
 // @Success      201     {object}  models.Author
 // @Failure      400     {object}  map[string]string
 // @Router       /authors [post]
