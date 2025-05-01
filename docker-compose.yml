@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres
+    container_name: my_postgres_db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres       # Matches DB_USER
+      POSTGRES_PASSWORD: 0000       # Matches DB_PASSWORD
+      POSTGRES_DB: document_system  # Matches DB_NAME
+    volumes:
+      - ./data/db:/var/lib/postgresql/data

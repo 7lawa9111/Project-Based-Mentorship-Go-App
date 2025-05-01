@@ -10,7 +10,9 @@ import (
 	"os"
 )
 
-func NewDatabaseConnection() (*gorm.DB, error) {
+var DB *gorm.DB
+
+func NewDatabaseConnection() error {
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		os.Getenv("DB_HOST"),
@@ -28,16 +30,17 @@ func NewDatabaseConnection() (*gorm.DB, error) {
 
 	db, err := gorm.Open(postgres.Open(dsn), config)
 	if err != nil {
-		return nil, fmt.Errorf("failed to connect to database: %w", err)
+		return fmt.Errorf("failed to connect to database: %w", err)
 	}
 
 	// Auto-migrate schemas
 	if err := db.AutoMigrate(&models.Author{}); err != nil {
-		return nil, fmt.Errorf("failed to migrate database: %w", err)
+		return fmt.Errorf("failed to migrate database: %w", err)
 	}
 	if err := db.AutoMigrate(&models.Document{}); err != nil {
-		return nil, fmt.Errorf("failed to migrate database: %w", err)
+		return fmt.Errorf("failed to migrate database: %w", err)
 	}
 	log.Println("Database connection established successfully")
-	return db, nil
+	DB = db
+	return nil
 }
