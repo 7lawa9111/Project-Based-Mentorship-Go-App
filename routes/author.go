@@ -10,5 +10,6 @@ func RegisterAuthorRoutes(router *gin.Engine, db *gorm.DB) {
 	authorGroup := router.Group("/authors")
 	{
 		authorGroup.POST("", handlers.CreateAuthor(db))
+		authorGroup.GET("/:id", handlers.GetAuthorByID(db))
 	}
 }
