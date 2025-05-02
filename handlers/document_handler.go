@@ -1,11 +1,12 @@
 package handlers
 
 import (
-	"github.com/7lawa9111/Project-Based-Mentorship-Go-App/dto"
 	"math"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/7lawa9111/Project-Based-Mentorship-Go-App/dto"
 
 	"github.com/7lawa9111/Project-Based-Mentorship-Go-App/models"
 	"github.com/gin-gonic/gin"
@@ -159,6 +160,61 @@ func UpdateDocument(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 		db.First(&document, "id = ?", id)
-		c.JSON(http.StatusOK, document)
+		c.JSON(http.StatusOK, gin.H{"message": "document with id " + id.String() + " deleted successfully"})
+	}
+}
+
+// @Summary      Delete Document by ID
+// @Description  Delete a specific document by its ID
+// @Tags         documents
+// @Accept       json
+// @Produce      json
+// @Param        id   path      string  true  "Document ID"
+// @Success      200  {object}  map[string]string
+// @Failure      400  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /documents/{id} [delete]
+
+func DeleteDocument(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		idParam := c.Param("id")
+		id, err := uuid.Parse(idParam)
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID format"})
+			return
+		}
+		var document models.Document
+		result := db.Delete(&document, "id = ?", id)
+		if result.Error != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+			return
+		}
+		if result.RowsAffected == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Document not found"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": " documents with id " + id.String() + " deleted successfully"})
+
+	}
+}
+
+// @Summary      Delete All Documents
+// @Description  Delete all documents from the system
+// @Tags         documents
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /documents [delete]
+func DeleteAllDocuments(db *gorm.DB) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		if err := db.Exec("DELETE FROM documents").Error; err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": "All documents deleted successfully"})
 	}
 }
