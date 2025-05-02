@@ -13,5 +13,7 @@ func RegisterDocumentsRoutes(router *gin.Engine, db *gorm.DB) {
 		documentGroup.GET("/:id", handlers.GetDocumentByID(db))
 		documentGroup.GET("", handlers.GetDocuments(db))
 		documentGroup.PATCH("/:id", handlers.UpdateDocument(db))
+		documentGroup.DELETE("/:id", handlers.DeleteDocument(db))
+		documentGroup.DELETE("", handlers.DeleteAllDocuments(db))
 	}
 }
