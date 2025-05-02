@@ -5,7 +5,6 @@ import (
 
 	"github.com/7lawa9111/Project-Based-Mentorship-Go-App/models"
 
-	// "github.com/7lawa9111/Project-Based-Mentorship-Go-App/issues/models"
 	"log"
 	"os"
 
