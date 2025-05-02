@@ -1,7 +1,10 @@
 package handlers
 
 import (
+	"github.com/7lawa9111/Project-Based-Mentorship-Go-App/dto"
+	"math"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/7lawa9111/Project-Based-Mentorship-Go-App/models"
@@ -70,6 +73,92 @@ func GetDocumentByID(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 
+		c.JSON(http.StatusOK, document)
+	}
+}
+
+// @Summary      Get All Document
+// @Description  Retrieve all documents with Pagination
+// @Tags         Documents
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  models.Document
+// @Failure      400  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Router       /documents or /documents?page=1&limit=20
+func GetDocuments(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+		if err != nil || page < 1 {
+			page = 1
+		}
+		limit, err := strconv.Atoi(c.DefaultQuery("limit", "10"))
+		if err != nil || limit < 1 {
+			limit = 10
+		}
+		offset := (page - 1) * limit
+		var totalItems int64
+		db.Model(&models.Document{}).Count(&totalItems)
+		var documents []models.Document
+		result := db.Offset(offset).Limit(limit).Find(&documents)
+		if result.Error != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get documents"})
+			return
+		}
+		totalPages := int(math.Ceil(float64(totalItems) / float64(limit)))
+		response := dto.GetDocumentsResponse{
+			Data: documents,
+			Pagination: dto.PaginationResponse{
+				CurrentPage: page,
+				PageSize:    limit,
+				TotalItems:  int(totalItems),
+				TotalPages:  totalPages,
+			},
+		}
+
+		c.JSON(http.StatusOK, response)
+	}
+}
+
+// @Summary      Partially update an document
+// @Description  Update specific fields of an existing document
+// @Tags         documents
+// @Accept       json
+// @Produce      json
+// @Param        id      path      string                true  "Document ID"
+// @Param        author  body      document    true  "Document Info"
+// @Success      200     {object}  models.Document
+// @Failure      400     {object}  map[string]string
+// @Failure      404     {object}  map[string]string
+// @Router       /documents/{id} [patch]
+func UpdateDocument(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		idParam := c.Param("id")
+		id, err := uuid.Parse(idParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID format"})
+			return
+		}
+		var document models.Document
+		if err := db.First(&document, "id = ?", id).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				c.JSON(http.StatusNotFound, gin.H{"error": "Document not found"})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			}
+			return
+		}
+		var updates map[string]interface{}
+		if err := c.ShouldBindJSON(&updates); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		updates["updated_at"] = time.Now()
+		if err := db.Model(&document).Updates(updates).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		db.First(&document, "id = ?", id)
 		c.JSON(http.StatusOK, document)
 	}
 }

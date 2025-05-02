@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	// Swagger docs
-	_ "github.com/7lawa9111/Project-Based-Mentorship-Go-App/docs"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
