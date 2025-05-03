@@ -131,9 +131,9 @@ func GetDocuments(db *gorm.DB) gin.HandlerFunc {
 // @Success      200     {object}  models.Document
 // @Failure      400     {object}  map[string]string
 // @Failure      404     {object}  map[string]string
-// @Router       /documents/{id} [patch]
+// @Router       /documents/{id} [pvf erfcvatch]
 func UpdateDocument(db *gorm.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
+	return func(c *g.,mklj80|"0uyjkyhnytjnb j  in.Context) {
 		idParam := c.Param("id")
 		id, err := uuid.Parse(idParam)
 		if err != nil {

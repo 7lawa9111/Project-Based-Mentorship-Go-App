@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=document_system
+      - DB_PORT=5432
+      - PORT=8080
+    networks:
+      - document-network
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=document_system
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - document-network
+    restart: unless-stopped
+
+networks:
+  document-network:
+    driver: bridge
+
+volumes:
+  postgres-data: 

@@ -1,126 +1,124 @@
-# 📚 Project-Based-Mentorship-Go-App
+# Document Management System
 
-A simple Go application to perform CRUD operations with PostgreSQL using Gin and GORM.  
-It serves as a backend for a project-based mentorship platform managing authors, documents, and more.
+A RESTful API service built with Go, Gin, and PostgreSQL for managing documents.
 
----
+## Features
 
-## 📖 Project Description
+- Create, Read, Update, and Delete documents
+- PostgreSQL database integration
+- RESTful API endpoints
+- Docker support
 
-This backend system manages mentorship data using RESTful APIs built with Go.  
-The project follows clean architecture, integrates Swagger for API documentation, and supports scalable deployment using Docker or Kubernetes.
+## Prerequisites
 
----
+- Go 1.21 or higher
+- PostgreSQL
+- Docker (optional)
+- Docker Compose (optional)
 
-## 💃 Database Schema (ERD)
+## Environment Variables
 
-![Database Diagram](document_DB_Diagram.png)
+Create a `.env` file in the root directory with the following variables:
 
----
-
-## 🚀 How to Run the Project Locally
-
-### Prerequisites
-
-- ✅ Go 1.20+
-- ✅ PostgreSQL installed and running
-- ✅ (Optional) Docker & Docker Compose
-
-### 1. Clone the Repository
-
-```shell
-git clone https://github.com/7lawa9111/Project-Based-Mentorship-Go-App.git
-cd Project-Based-Mentorship-Go-App
+```env
+DB_HOST=localhost
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=document_system
+DB_PORT=5432
+PORT=8080
 ```
 
-### 2. Create `.env` File
+## API Endpoints
 
-```shell
-cp .env.example .env
+- `POST /api/documents` - Create a new document
+- `GET /api/documents` - Get all documents
+- `GET /api/documents/:id` - Get a document by ID
+- `PUT /api/documents/:id` - Update a document
+- `DELETE /api/documents/:id` - Delete a document
+
+## Running Locally
+
+1. Install dependencies:
+```bash
+go mod download
 ```
 
-Edit `.env` and fill in your PostgreSQL credentials.
-
-### 3. Install Dependencies
-
-```shell
-go mod tidy
-```
-
-### 4. Run the Application
-
-```shell
+2. Run the application:
+```bash
 go run main.go
 ```
 
----
+## Running with Docker
 
-## 📂 Project Directory Structure
+### Option 1: Using Docker Compose (Recommended)
 
-```text
-Project-Based-Mentorship-Go-App/
-├── config/                   # Configuration setup
-├── database/                 # PostgreSQL DB connection
-├── docs/                     # Swagger documentation files
-├── handlers/                 # Business logic and controllers
-├── k8s/                      # Kubernetes configuration files
-├── models/                   # GORM models for DB
-├── routes/                   # API routes
-├── .env                      # App environment variables
-├── .env.example              # Example of .env
-├── .gitignore                # Git ignore rules
-├── App Technical Specs.md    # Additional specs
-├── document_DB_Diagram.png   # Database schema image
-├── go.mod                    # Module dependencies
-├── go.sum                    # Dependency checksums
-├── main.go                   # App entry point
-└── README.md                 # This file
+1. Start all services:
+```bash
+docker-compose up -d
 ```
 
----
-
-## 📘️ API Documentation (Swagger)
-
-To generate Swagger docs:
-
-```shell
-swag init
+2. Stop all services:
+```bash
+docker-compose down
 ```
 
-Serve Swagger UI at:
-
+3. View logs:
+```bash
+docker-compose logs -f
 ```
-http://localhost:8080/swagger/index.html
+
+### Option 2: Using Docker directly
+
+1. Build the Docker image:
+```bash
+docker build -t document-system .
 ```
 
-You’ll see endpoints like:
+2. Run the container:
+```bash
+docker run -p 8080:8080 document-system
+```
 
-- `POST /authors`
-- `POST /documents`
+## Database Setup
 
----
-
-## 👥 Contributors
-
+<<<<<<< Updated upstream
 - [@7lawa9111](https://github.com/7lawa9111) – Creator & Maintainer
 - [@mariamkhaled99](https://github.com/mariamkhaled99) – Contributor
 - [@RoadmannCoder](https://github.com/RoadmannCoder) – Contributor
 - [@AbdallahAskar1](https://github.com/AbdallahAskar1) - Contributor
+=======
+1. Create a PostgreSQL database named `document_system`
+2. The application will automatically create the required tables on startup
+>>>>>>> Stashed changes
 
+## API Request Examples
 
----
+### Create Document
+```bash
+curl -X POST http://localhost:8080/api/documents \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Sample Document","author":"John Doe","content":"This is a sample document"}'
+```
 
-## 🔗 Project Link
+### Get All Documents
+```bash
+curl http://localhost:8080/api/documents
+```
 
-[🔗 GitHub Repository](https://github.com/7lawa9111/Project-Based-Mentorship-Go-App)
+### Get Document by ID
+```bash
+curl http://localhost:8080/api/documents/1
+```
 
----
+### Update Document
+```bash
+curl -X PUT http://localhost:8080/api/documents/1 \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Updated Document","author":"John Doe","content":"This is an updated document"}'
+```
 
-## 🛠️ Built With
-
-- [Gin](https://github.com/gin-gonic/gin) – HTTP Web Framework
-- [GORM](https://gorm.io/) – ORM Library
-- [Swaggo](https://github.com/swaggo/swag) – Swagger Generator
-- [PostgreSQL](https://www.postgresql.org/) – Relational Database
-- [Docker](https://www.docker.com/) – Containerization Platform
-- [Kubernetes](https://kubernetes.io/) – Container Orchestration Platform
+### Delete Document
+```bash
+curl -X DELETE http://localhost:8080/api/documents/1
+``` 
