@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: document-system-config
+data:
+  db_host: "postgres-service"
+  db_name: "document_system"
+  db_port: "5432" 

@@ -14,6 +14,9 @@ func RegisterDocumentsRoutes(router *gin.Engine, db *gorm.DB) {
 		documentGroup.GET("", handlers.GetDocuments(db))
 		documentGroup.PATCH("/:id", handlers.UpdateDocument(db))
 		documentGroup.DELETE("/:id", handlers.DeleteDocument(db))
+<<<<<<< Updated upstream
 		documentGroup.DELETE("", handlers.DeleteAllDocuments(db))
+=======
+>>>>>>> Stashed changes
 	}
 }
