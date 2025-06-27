@@ -1,10 +1,14 @@
 package handlers
 
 import (
+	"io"
+	
 	"math"
+net/http"
+	
 	"net/http"
-	"strconv"
-	"time"
+	"io"
+	"path/filepath"
 
 	"github.com/7lawa9111/Project-Based-Mentorship-Go-App/dto"
 
@@ -25,23 +29,28 @@ import (
 // @Router       /documents [post]
 func CreateDocument(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var input models.Document
+		var input dto.CreateDocumentDto
 
 		if err := c.ShouldBindJSON(&input); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		input.ID = uuid.New()
-		input.CreatedAt = time.Now()
-		input.UpdatedAt = time.Now()
+		document := models.Document{
+			ID:        uuid.New(),
+			AuthorID:  input.AuthorID,
+			Title:     input.Title,
+			Content:   input.Content,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		}
 
-		if err := db.Create(&input).Error; err != nil {
+		if err := db.Create(&document).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		c.JSON(http.StatusCreated, input)
+		c.JSON(http.StatusCreated, document)
 	}
 }
 
@@ -121,19 +130,19 @@ func GetDocuments(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-// @Summary      Partially update an document
-// @Description  Update specific fields of an existing document
+// @Summary      Update a document
+// @Description  Update an existing document
 // @Tags         documents
 // @Accept       json
 // @Produce      json
-// @Param        id      path      string                true  "Document ID"
-// @Param        author  body      document    true  "Document Info"
+// @Param        id          path      string                true  "Document ID"
+// @Param        document    body      dto.CreateDocumentDto    true  "Document Info"
 // @Success      200     {object}  models.Document
 // @Failure      400     {object}  map[string]string
 // @Failure      404     {object}  map[string]string
-// @Router       /documents/{id} [pvf erfcvatch]
+// @Router       /documents/{id} [patch]
 func UpdateDocument(db *gorm.DB) gin.HandlerFunc {
-	return func(c *g.,mklj80|"0uyjkyhnytjnb j  in.Context) {
+	return func(c *gin.Context) {
 		idParam := c.Param("id")
 		id, err := uuid.Parse(idParam)
 		if err != nil {
@@ -147,20 +156,27 @@ func UpdateDocument(db *gorm.DB) gin.HandlerFunc {
 			} else {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			}
-			return
+
 		}
-		var updates map[string]interface{}
-		if err := c.ShouldBindJSON(&updates); err != nil {
+		
+		var input dto.CreateDocumentDto
+		if err := c.ShouldBindJSON(&input); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
+
 		}
-		updates["updated_at"] = time.Now()
-		if err := db.Model(&document).Updates(updates).Error; err != nil {
+		
+		// Update document fields
+		document.Title = input.Title
+		document.AuthorID = input.AuthorID
+
+		document.UpdatedAt = time.Now()
+		
+		if err := db.Save(&document).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
+
 		}
-		db.First(&document, "id = ?", id)
-		c.JSON(http.StatusOK, gin.H{"message": "document with id " + id.String() + " deleted successfully"})
+		
+		c.JSON(http.StatusOK, document)
 	}
 }
 
@@ -175,7 +191,6 @@ func UpdateDocument(db *gorm.DB) gin.HandlerFunc {
 // @Failure      404  {object}  map[string]string
 // @Failure      500  {object}  map[string]string
 // @Router       /documents/{id} [delete]
-
 func DeleteDocument(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		idParam := c.Param("id")
@@ -196,8 +211,7 @@ func DeleteDocument(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": " documents with id " + id.String() + " deleted successfully"})
-
+		c.JSON(http.StatusOK, gin.H{"message": "Document with id " + id.String() + " deleted successfully"})
 	}
 }
 
@@ -216,5 +230,120 @@ func DeleteAllDocuments(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 		ctx.JSON(http.StatusOK, gin.H{"message": "All documents deleted successfully"})
+	}
+}
+
+// @Summary      Upload PDF document
+// @Description  Upload a PDF document using multipart/form-data
+// @Tags         documents
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        authorId   formData  string  true  "Author ID"
+// @Param        title      formData  string  true  "Document Title"
+// @Param        file       formData  file    true  "PDF file to upload"
+// @Success      201  {object}  models.Document
+// @Failure      400  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /documents/upload [post]
+func UploadDocument(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Parse form data
+		authorIDStr := c.PostForm("authorId")
+		title := c.PostForm("title")
+
+		// Validate author ID
+		authorID, err := uuid.Parse(authorIDStr)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid author ID format"})
+			return
+		}
+
+		// Get the file from form data
+		file, err := c.FormFile("file")
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "File upload failed: " + err.Error()})
+			return
+		}
+
+		// Check file extension (only allow PDF)
+		ext := filepath.Ext(file.Filename)
+		if ext != ".pdf" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Only PDF files are allowed"})
+			return
+		}
+
+		// Open the uploaded file
+		openedFile, err := file.Open()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to open uploaded file"})
+			return
+		}
+		defer openedFile.Close()
+
+		// Read file content
+		fileContent, err := io.ReadAll(openedFile)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read file content"})
+			return
+		}
+
+		// Create document
+		document := models.Document{
+			ID:        uuid.New(),
+			AuthorID:  authorID,
+			Title:     title,
+			Content:   fileContent,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		}
+
+		// Save to database
+		if err := db.Create(&document).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save document: " + err.Error()})
+			return
+		}
+
+		// Return success response
+		c.JSON(http.StatusCreated, document)
+	}
+}
+
+// @Summary      Download PDF document
+// @Description  Download a PDF document by ID
+// @Tags         documents
+// @Produce      application/pdf
+// @Param        id   path      string  true  "Document ID"
+// @Success      200  {file}    binary
+// @Failure      400  {object}  map[string]string
+// @Failure      404  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /documents/{id}/download [get]
+func DownloadDocument(db *gorm.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		idParam := c.Param("id")
+		id, err := uuid.Parse(idParam)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID format"})
+			return
+		}
+
+		var document models.Document
+		if err := db.First(&document, "id = ?", id).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				c.JSON(http.StatusNotFound, gin.H{"error": "Document not found"})
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Set response headers for file download
+		fileName := document.Title + ".pdf"
+		c.Header("Content-Disposition", "attachment; filename="+fileName)
+		c.Header("Content-Type", "application/pdf")
+		c.Header("Content-Length", strconv.Itoa(len(document.Content)))
+
+		// Write the PDF content to the response
+		c.Writer.Write(document.Content)
 	}
 }

@@ -12,7 +12,7 @@ CREATE TABLE "documents" (
                              "id" UUID PRIMARY KEY,
                              "author_id" UUID,
                              "title" VARCHAR,
-                             "content" TEXT,
+                             "content" BYTEA,
                              "created_at" timestamp,
                              "updated_at" timestamp,
                              "created_by" VARCHAR,

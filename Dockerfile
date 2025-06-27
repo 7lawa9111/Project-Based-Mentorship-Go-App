@@ -19,12 +19,15 @@ FROM alpine:3.19
 
 WORKDIR /app
 
+# Install necessary tools
+RUN apk --no-cache add curl
+
 # Copy the binary from builder
 COPY --from=builder /app/main .
-COPY --from=builder /app/.env .
+COPY --from=builder /app/.env.example .env
 
 # Expose port 8080
 EXPOSE 8080
 
 # Command to run the executable
-CMD ["./main"] 
+CMD ["./main"]
