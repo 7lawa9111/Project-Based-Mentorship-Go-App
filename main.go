@@ -33,6 +33,6 @@ func main() {
 	routes.RegisterAuthorRoutes(r, db)
 	routes.RegisterDocumentsRoutes(r, db)
 
-	r.Run(":8080") // listen and serve
+	r.Run("0.0.0.0:8080") // listen and serve
 
 }

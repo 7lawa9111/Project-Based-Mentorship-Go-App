@@ -1,21 +1,17 @@
 package handlers
 
 import (
-	"io"
-	
 	"math"
-net/http"
-	
 	"net/http"
-	"io"
 	"path/filepath"
-
 	"github.com/7lawa9111/Project-Based-Mentorship-Go-App/dto"
-
 	"github.com/7lawa9111/Project-Based-Mentorship-Go-App/models"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"time"
+    "strconv"
+	"io"
 )
 
 // @Summary      Create a new Document
